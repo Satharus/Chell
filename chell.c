@@ -11,27 +11,28 @@ int main()
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
+    size_t size = 256;
+    char *command = (char*) malloc(sizeof(char)*size);
+    
     while (1)
     {
         initPrompt();
-
-        size_t size = 256;
-        char *command = (char*) malloc(sizeof(char)*size);
-
         //Command input
         getline(&command, &size, stdin);
 
         //Delete the newline
         command[strlen(command)-1] = 0;
         
+        //If not an empty command
         if (strcmp(command, "") != 0) 
             executeCommand(command, executables);
-
-        free(command);
     }
-
+    
+    free(command);
+    
     for (int i = 0; i < numberOfDirs; i++)
         free(PATHdirs[i]);
+    
     free(executables);
 }
 
@@ -82,19 +83,34 @@ struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory)
 
 void initPrompt()
 {
+    //Get environment variables for the prompt
     char *home = getenv("HOME");
     char *user = getenv("USER");
     char *pwd =  getenv("PWD");
 
-    if (pwd == NULL) pwd = "";
+    //If any of them are undefined
+    if (pwd == NULL) strcpy(pwd, "");
+    if (home == NULL) 
+    {
+        if (user == NULL)
+            strcpy(home, "");
+        else
+        {
+            sprintf(home, "/home/%s", user);
+            setenv("HOME", home, 1);
+        }
+    }
     if (user == NULL) sprintf(user, "%s-v%.2f", "Chell", VERSION);
 
+    //If the current working dir is home
     if (strcmp(pwd, home) == 0)
         strcpy(pwd, "~");
     
+    //If the current working dir has /home/USER in it 
     if (strstr(pwd, home) != NULL)
     {
-        char *actualpath = strstr(pwd+6, "/");
+        //Skip /home/
+        char *actualpath = strstr(pwd+5, "/");
         sprintf(pwd, "~%s", actualpath);
     }
 
@@ -120,7 +136,6 @@ int splitString(char *split[], char *string, char *delim)
     }
 
     return argc;
-
 }
 
 int splitCommand(char *argv[], char *command)
@@ -193,6 +208,17 @@ void executeCommand(char *commandString, struct executable *executables)
 
 void cd(char *path)
 {
-    if (chdir(path) == 0) 
+    int status = chdir(path); 
+    
+    if (status == 0) 
         setenv("PWD", getcwd(NULL, 4096), 1);
+    else if (status == -1)
+    {
+        if (errno == EACCES)
+            printf("%s: Permission denied.\n", path);
+        else if (errno == ENOENT)
+            printf("%s: Doesn't exist.\n", path);
+        else if (errno == ENOTDIR)
+            printf("%s: Not a directory.\n", path);
+    }
 }

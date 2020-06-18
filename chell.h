@@ -5,8 +5,9 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <errno.h>
 
-#define VERSION 0.02
+#define VERSION 0.03
 
 struct executable
 {
