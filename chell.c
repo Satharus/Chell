@@ -126,11 +126,12 @@ void initPrompt()
 int splitString(char *split[], char *string, char *delim)
 {
     char *arg = strtok(string, delim);
+    size_t size = 256;
 
     int argc = 0;
     while (arg != NULL)
     {
-        strcpy(split[argc], arg);
+        strncpy(split[argc], arg, size);
         argc++;
         arg = strtok(NULL, delim);
     }
