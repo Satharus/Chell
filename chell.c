@@ -126,11 +126,12 @@ void initPrompt()
 int splitString(char *split[], char *string, char *delim)
 {
     char *arg = strtok(string, delim);
+    size_t size = 256;
 
     int argc = 0;
     while (arg != NULL)
     {
-        strcpy(split[argc], arg);
+        strncpy(split[argc], arg, size);
         argc++;
         arg = strtok(NULL, delim);
     }
@@ -168,7 +169,8 @@ void executeCommand(char *commandString, struct executable *executables)
     {
         if (strcmp(argv[0], executables[i].name) == 0)
         {
-            sprintf(commandPath,"%s/%s", executables[i].path, executables[i].name);
+            size_t size = 256;
+            snprintf(commandPath, size,"%s/%s", executables[i].path, executables[i].name);
             programExists = 1;
             break;
         }
