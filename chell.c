@@ -168,7 +168,7 @@ void executeCommand(char *commandString, struct executable *executables)
     {
         if (strcmp(argv[0], executables[i].name) == 0)
         {
-            size_t size = 256
+            size_t size = 256;
             snprintf(commandPath, size,"%s/%s", executables[i].path, executables[i].name);
             programExists = 1;
             break;
