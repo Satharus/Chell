@@ -229,7 +229,7 @@ void cd(char *path)
 void sigintHandler(int signal_number) 
 { 
     signal(SIGINT, sigintHandler);
-    printf("\n\n **Use exit or q to terminate** \n\n");
+    printf("\n");
     initPrompt();
     fflush(stdout); 
 }
