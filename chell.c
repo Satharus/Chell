@@ -145,6 +145,9 @@ int splitCommand(char *argv[], char *command)
     return splitString(argv, command, "\t ");
 }
 
+// holds all environment variables
+extern char** environ;
+
 void executeCommand(char *commandString, struct executable *executables)
 {
     if (strcmp(commandString, "exit") == 0 || strcmp(commandString, "quit") == 0 || strcmp(commandString, "q") == 0)
@@ -183,7 +186,7 @@ void executeCommand(char *commandString, struct executable *executables)
         if (processID == 0)
         {
             //Create a new process for the command
-            execv(commandPath, argv);
+            execve(commandPath, argv, environ);
             exit(0);   
         }
         else
