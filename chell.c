@@ -25,7 +25,7 @@ int main()
         command[strlen(command)-1] = 0;
         
         //If not an empty command
-        if (strcmp(command, "") != 0) 
+        if (strcmp(command, "") != 0 && !isWhiteSpaces(command)) 
             executeCommand(command, executables);
     }
     
@@ -232,4 +232,14 @@ void sigintHandler(int signal_number)
     printf("\n");
     initPrompt();
     fflush(stdout); 
+}
+
+char isWhiteSpaces(char *str)
+{
+    for (int i = 0; i < strlen(str); i++)
+    {
+        if (str[i] != ' ' && str[i] != '\t') 
+            return 0;
+    }
+    return 1;
 }

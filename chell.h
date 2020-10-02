@@ -33,3 +33,5 @@ void executeCommand(char *commandString, struct executable *executables);
 void cd(char *path);
 
 void sigintHandler(int signal_number);
+
+char isWhiteSpaces(char *str);
