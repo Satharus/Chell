@@ -1,8 +1,8 @@
 #include "chell.h"
-
+#include <readline/readline.h>
+#include <readline/history.h>
 int main()
 {
-    signal(SIGINT, sigintHandler);
     int numberOfDirs = getPATHLocationCount(getenv("PATH"));
     char *PATHdirs[numberOfDirs];
 
@@ -19,13 +19,14 @@ int main()
     {
         initPrompt();
         //Command input
-        getline(&command, &size, stdin);
+        // getline(&command, &size, stdin);
+        command = readline(" ");
 
-        //Delete the newline
-        command[strlen(command)-1] = 0;
+        // //Delete the newline
+        // command[strlen(command)-1] = 0;
         
         //If not an empty command
-        if (strcmp(command, "") != 0 && !isWhiteSpaces(command)) 
+        if (strcmp(command, "") != 0) 
             executeCommand(command, executables);
     }
     
@@ -224,22 +225,4 @@ void cd(char *path)
         else if (errno == ENOTDIR)
             printf("%s: Not a directory.\n", path);
     }
-}
-
-void sigintHandler(int signal_number) 
-{ 
-    signal(SIGINT, sigintHandler);
-    printf("\n");
-    initPrompt();
-    fflush(stdout); 
-}
-
-char isWhiteSpaces(char *str)
-{
-    for (int i = 0; i < strlen(str); i++)
-    {
-        if (str[i] != ' ' && str[i] != '\t') 
-            return 0;
-    }
-    return 1;
 }
