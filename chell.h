@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <signal.h> 
 
-#define VERSION 0.03
+#define VERSION 0.04
 
 struct executable
 {

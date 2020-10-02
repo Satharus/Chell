@@ -110,8 +110,8 @@ void initPrompt()
     //If the current working dir has /home/USER in it 
     if (strstr(pwd, home) != NULL)
     {
-        //Skip /home/
-        char *actualpath = strstr(pwd+5, "/");
+        //Skip /home/user
+        char *actualpath = strstr(pwd+6, "/");
         sprintf(pwd, "~%s", actualpath);
     }
 
@@ -126,7 +126,8 @@ void initPrompt()
 
 int splitString(char *split[], char *string, char *delim)
 {
-    char *arg = strtok(string, delim);
+    char *stringDup = strdup(string);
+    char *arg = strtok(stringDup, delim);
     size_t size = 256;
 
     int argc = 0;
@@ -136,7 +137,7 @@ int splitString(char *split[], char *string, char *delim)
         argc++;
         arg = strtok(NULL, delim);
     }
-
+    free(stringDup);
     return argc;
 }
 
