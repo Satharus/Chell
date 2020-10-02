@@ -15,7 +15,7 @@ It's not.
 
 #### Running Chell
 
-Just run ```gcc chell.c -o chell``` and then ```./chell``` from any existing shell and you will get the chell "bash-like" prompt.
+Just run (```gcc chell.c -o chell``` or ```make chell```) and then ```./chell``` from any existing shell and you will get the chell "bash-like" prompt.
 
 #### Demo
 
