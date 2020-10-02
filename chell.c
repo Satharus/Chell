@@ -2,6 +2,7 @@
 
 int main()
 {
+    signal(SIGINT, sigintHandler);
     int numberOfDirs = getPATHLocationCount(getenv("PATH"));
     char *PATHdirs[numberOfDirs];
 
@@ -223,4 +224,12 @@ void cd(char *path)
         else if (errno == ENOTDIR)
             printf("%s: Not a directory.\n", path);
     }
+}
+
+void sigintHandler(int signal_number) 
+{ 
+    signal(SIGINT, sigintHandler);
+    printf("\n\n **Use exit or q to terminate** \n\n");
+    initPrompt();
+    fflush(stdout); 
 }

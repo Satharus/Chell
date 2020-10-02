@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
+#include <signal.h> 
 
 #define VERSION 0.03
 
@@ -30,3 +31,5 @@ int splitCommand(char *argv[], char *command);
 void executeCommand(char *commandString, struct executable *executables);
 
 void cd(char *path);
+
+void sigintHandler(int signal_number);
