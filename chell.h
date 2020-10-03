@@ -10,8 +10,13 @@
 #include <signal.h>
 
 #define VERSION 0.05
-
+#define SHELL_NAME "Chell"
 #define ARG_MAX sysconf(_SC_ARG_MAX)
+
+#define max(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a > _b ? _a : _b; })
 
 
 struct executable

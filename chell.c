@@ -25,7 +25,7 @@ int main()
         command[strlen(command)-1] = 0;
 
         //If not an empty command
-        if (strcmp(command, "") != 0 && !isWhiteSpaces(command))
+        if (strlen(command) != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
     }
 
@@ -40,7 +40,8 @@ int main()
 int getPATHLocationCount(char *PATH)
 {
     int j = 0;
-    for (int i = 0; i < strlen(PATH); i++)
+    int pathLen = strlen(PATH); 
+    for (int i = 0; i < pathLen; i++)
     {
         if (PATH[i] == ':') j++;
     }
@@ -67,11 +68,11 @@ struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory)
         {
             while ((ep = readdir(dirPointer)))
             {
-                if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, ".."))
+                if (!strncmp(ep->d_name, ".", 1) || !strncmp(ep->d_name, "..", 1))
                     continue;
 
-                strcpy(executables[j].name, ep->d_name);
-                strcpy(executables[j].path, dir[i]);
+                strncpy(executables[j].name, ep->d_name, strlen(ep->d_name));
+                strncpy(executables[j].path, dir[i], strlen(dir[i]));
                 j++;
             }
             (void) closedir (dirPointer);
@@ -90,33 +91,33 @@ void initPrompt()
     char *pwd =  getenv("PWD");
 
     //If any of them are undefined
-    if (pwd == NULL) strcpy(pwd, "");
+    if (pwd == NULL) strncpy(pwd, "", 1);
     if (home == NULL)
     {
         if (user == NULL)
-            strcpy(home, "");
+            strncpy(home, "", 1);
         else
         {
-            sprintf(home, "/home/%s", user);
+            snprintf(home, strlen(user) + 6, "/home/%s", user);
             setenv("HOME", home, 1);
         }
     }
-    if (user == NULL) sprintf(user, "%s-v%.2f", "Chell", VERSION);
+    if (user == NULL) snprintf(user, 16, "%s-v%.2f", SHELL_NAME, VERSION);
 
     //If the current working dir is home
-    if (strcmp(pwd, home) == 0)
-        strcpy(pwd, "~");
+    if (strncmp(pwd, home, max(strlen(pwd), strlen(home))) == 0)
+        strncpy(pwd, "~", strlen(pwd));
 
     //If the current working dir has /home/USER in it
     if (strstr(pwd, home) != NULL)
     {
         //Skip /home/user
-        char *actualpath = strstr(pwd+6, "/");
-        sprintf(pwd, "~%s", actualpath);
+        char *actualpath = strstr(pwd+strlen(user), "/");
+        snprintf(pwd, strlen(actualpath) + 3, "~%s", actualpath);
     }
 
     char prompt;
-    if (strcmp(user, "root") == 0)
+    if (strncmp(user, "root", 5) == 0)
         prompt = '#';
     else
         prompt = '$';
@@ -147,7 +148,7 @@ int splitCommand(char *argv[], char *command)
 
 void executeCommand(char *commandString, struct executable *executables)
 {
-    if (strcmp(commandString, "exit") == 0 || strcmp(commandString, "quit") == 0 || strcmp(commandString, "q") == 0)
+    if (strncmp(commandString, "exit", 4) == 0 || strncmp(commandString, "quit", 4) == 0 || strncmp(commandString, "q", 1) == 0)
         exit(0);
 
     pid_t processID;
@@ -176,7 +177,7 @@ void executeCommand(char *commandString, struct executable *executables)
     {
         for (int i = 0; i < nExecutables; i++)
         {
-            if (strcmp(argv[0], executables[i].name) == 0)
+            if (strncmp(argv[0], executables[i].name, max(strlen(executables[i].name), strlen(argv[0]))) == 0)
             {
                 snprintf(commandPath, PATH_MAX,"%s/%s", executables[i].path, executables[i].name);
                 programExists = 1;
@@ -197,7 +198,7 @@ void executeCommand(char *commandString, struct executable *executables)
         else
             waitpid(processID, 0, 0);
     }
-    else if (strcmp(argv[0], "cd") == 0)
+    else if (strncmp(argv[0], "cd", 2) == 0)
     {
         if (argv[1] != NULL)
             cd(argv[1]);
@@ -244,7 +245,8 @@ void sigintHandler(int signal_number)
 
 char isWhiteSpaces(char *str)
 {
-    for (int i = 0; i < strlen(str); i++)
+    int strLen = strlen(str);
+    for (int i = 0; i < strLen; i++)
     {
         if (str[i] != ' ' && str[i] != '\t')
             return 0;
