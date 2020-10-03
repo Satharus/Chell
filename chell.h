@@ -6,9 +6,9 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
-#include <signal.h> 
+#include <signal.h>
 
-#define VERSION 0.04
+#define VERSION 0.05
 
 struct executable
 {

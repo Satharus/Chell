@@ -1,5 +1,8 @@
 #include "chell.h"
 
+#undef PATH_MAX
+#define PATH_MAX 256
+
 int main()
 {
     signal(SIGINT, sigintHandler);
@@ -12,9 +15,9 @@ int main()
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
-    size_t size = 256;
+    size_t size = PATH_MAX;
     char *command = (char*) malloc(sizeof(char)*size);
-    
+
     while (1)
     {
         initPrompt();
@@ -23,17 +26,17 @@ int main()
 
         //Delete the newline
         command[strlen(command)-1] = 0;
-        
+
         //If not an empty command
-        if (strcmp(command, "") != 0 && !isWhiteSpaces(command)) 
+        if (strcmp(command, "") != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
     }
-    
+
     free(command);
-    
+
     for (int i = 0; i < numberOfDirs; i++)
         free(PATHdirs[i]);
-    
+
     free(executables);
 }
 
@@ -55,21 +58,21 @@ void getPATHLocations(char *directories[], char *PATH)
 struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory)
 {
     struct executable *executables = malloc(numberOfDirectory*4000*sizeof(struct executable));
-    
+
     int j = 0;
     for(int i = 0; i < numberOfDirectory; i++)
     {
         DIR *dirPointer;
         struct dirent *ep;
         dirPointer = opendir(dir[i]);
-        
+
         if (dirPointer != NULL)
         {
             while ((ep = readdir(dirPointer)))
             {
                 if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, ".."))
                     continue;
-                
+
                 strcpy(executables[j].name, ep->d_name);
                 strcpy(executables[j].path, dir[i]);
                 j++;
@@ -91,7 +94,7 @@ void initPrompt()
 
     //If any of them are undefined
     if (pwd == NULL) strcpy(pwd, "");
-    if (home == NULL) 
+    if (home == NULL)
     {
         if (user == NULL)
             strcpy(home, "");
@@ -106,8 +109,8 @@ void initPrompt()
     //If the current working dir is home
     if (strcmp(pwd, home) == 0)
         strcpy(pwd, "~");
-    
-    //If the current working dir has /home/USER in it 
+
+    //If the current working dir has /home/USER in it
     if (strstr(pwd, home) != NULL)
     {
         //Skip /home/user
@@ -128,7 +131,7 @@ int splitString(char *split[], char *string, char *delim)
 {
     char *stringDup = strdup(string);
     char *arg = strtok(stringDup, delim);
-    size_t size = 256;
+    size_t size = PATH_MAX;
 
     int argc = 0;
     while (arg != NULL)
@@ -150,14 +153,14 @@ void executeCommand(char *commandString, struct executable *executables)
 {
     if (strcmp(commandString, "exit") == 0 || strcmp(commandString, "quit") == 0 || strcmp(commandString, "q") == 0)
         exit(0);
-    
+
     pid_t processID;
-    char *argv[256];
-    
+    char *argv[PATH_MAX];
+
     //Allocate the argv array
-    for (int i = 0; i < 256; i++)
-        argv[i]= malloc(sizeof(char)*256);
-    
+    for (int i = 0; i < PATH_MAX; i++)
+        argv[i]= malloc(sizeof(char)*PATH_MAX);
+
     //Split the command and get the number of arguments
     int argc = splitCommand(argv, commandString);
 
@@ -165,19 +168,28 @@ void executeCommand(char *commandString, struct executable *executables)
     argv[argc] = NULL;
 
     //Get the actual command path
-    char *commandPath = malloc(256*sizeof(char));
+    char *commandPath = malloc(PATH_MAX*sizeof(char));
     char programExists = 0;
-    for (int i = 0; i < nExecutables; i++)
+
+    // Check if it's a relative / full path first
+    if (realpath(argv[0], commandPath) != NULL && strstr(argv[0], "/") != NULL)
     {
-        if (strcmp(argv[0], executables[i].name) == 0)
+        programExists = 1;
+    }
+    else
+    {
+        for (int i = 0; i < nExecutables; i++)
         {
-            size_t size = 256;
-            snprintf(commandPath, size,"%s/%s", executables[i].path, executables[i].name);
-            programExists = 1;
-            break;
+            if (strcmp(argv[0], executables[i].name) == 0)
+            {
+                size_t size = PATH_MAX;
+                snprintf(commandPath, size,"%s/%s", executables[i].path, executables[i].name);
+                programExists = 1;
+                break;
+            }
         }
     }
-    
+
     if (programExists)
     {
         processID = fork();
@@ -185,7 +197,7 @@ void executeCommand(char *commandString, struct executable *executables)
         {
             //Create a new process for the command
             execv(commandPath, argv);
-            exit(0);   
+            exit(0);
         }
         else
             waitpid(processID, 0, 0);
@@ -203,18 +215,18 @@ void executeCommand(char *commandString, struct executable *executables)
     }
 
     //Free the argv array
-    for (int i = 0; i < 256; i++)
-        free(argv[i]);      
+    for (int i = 0; i < PATH_MAX; i++)
+        free(argv[i]);
 
     free (commandPath);
- 
+
 }
 
 void cd(char *path)
 {
-    int status = chdir(path); 
-    
-    if (status == 0) 
+    int status = chdir(path);
+
+    if (status == 0)
         setenv("PWD", getcwd(NULL, 4096), 1);
     else if (status == -1)
     {
@@ -227,19 +239,19 @@ void cd(char *path)
     }
 }
 
-void sigintHandler(int signal_number) 
-{ 
+void sigintHandler(int signal_number)
+{
     signal(SIGINT, sigintHandler);
     printf("\n");
     initPrompt();
-    fflush(stdout); 
+    fflush(stdout);
 }
 
 char isWhiteSpaces(char *str)
 {
     for (int i = 0; i < strlen(str); i++)
     {
-        if (str[i] != ' ' && str[i] != '\t') 
+        if (str[i] != ' ' && str[i] != '\t')
             return 0;
     }
     return 1;
