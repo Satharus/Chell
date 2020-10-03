@@ -117,7 +117,7 @@ void initPrompt()
     }
 
     char prompt;
-    if (strncmp(user, "root", 5) == 0)
+    if (getuid() == 0)
         prompt = '#';
     else
         prompt = '$';
