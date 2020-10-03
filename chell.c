@@ -13,7 +13,7 @@ int main()
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
-    size_t size = 1256;
+    size_t size = 256;
     char *command = (char*) malloc(sizeof(char)*size);
     
     while (1)
