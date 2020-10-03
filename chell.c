@@ -1,4 +1,6 @@
 #include "chell.h"
+#include <string.h>
+#include <readline/readline.h>
 
 int main()
 {
@@ -11,17 +13,16 @@ int main()
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
-    size_t size = 256;
+    size_t size = 1256;
     char *command = (char*) malloc(sizeof(char)*size);
     
     while (1)
     {
-        initPrompt();
-        //Command input
-        getline(&command, &size, stdin);
+        //Get prompt 
+        char *promptString = initPrompt();
 
-        //Delete the newline
-        command[strlen(command)-1] = 0;
+        //Command input
+        command = readline(promptString);
         
         //If not an empty command
         if (strcmp(command, "") != 0) 
@@ -81,7 +82,7 @@ struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory)
     return executables;
 }
 
-void initPrompt()
+char *initPrompt()
 {
     //Get environment variables for the prompt
     char *home = getenv("HOME");
@@ -120,7 +121,20 @@ void initPrompt()
     else
         prompt = '$';
 
-    printf("%s:%s%c ", user, pwd, prompt);
+    //printf("%s:%s%c ", user, pwd, prompt);
+    return createPromptString(user, pwd, prompt);
+}
+
+char *createPromptString(char *user, char *pwd, char prompt){
+    char *promptString = (char*)malloc(sizeof(char) * 100);
+    char p[5] = "  "; p[0] = prompt;
+
+    strcpy(promptString, user);
+    strcat(promptString, ":");
+    strcat(promptString, pwd);
+    strcat(promptString, p);
+
+    return promptString;
 }
 
 int splitString(char *split[], char *string, char *delim)

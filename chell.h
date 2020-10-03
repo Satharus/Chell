@@ -22,7 +22,8 @@ int nExecutables = 0;
 struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory);
 
 
-void initPrompt();
+char *initPrompt();
+char *createPromptString(char*, char*, char);
 
 int splitString(char *split[], char *string, char *delim);
 int splitCommand(char *argv[], char *command);
