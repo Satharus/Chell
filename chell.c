@@ -1,8 +1,5 @@
 #include "chell.h"
 
-#undef PATH_MAX
-#define PATH_MAX 256
-
 int main()
 {
     signal(SIGINT, sigintHandler);
@@ -10,12 +7,12 @@ int main()
     char *PATHdirs[numberOfDirs];
 
     for (int i = 0; i < numberOfDirs; i++)
-        PATHdirs[i] = (char*) malloc(sizeof(char *)*40);
+        PATHdirs[i] = (char*) malloc(sizeof(char *)*PATH_MAX);
 
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
-    size_t size = PATH_MAX;
+    size_t size = ARG_MAX;
     char *command = (char*) malloc(sizeof(char)*size);
 
     while (1)
@@ -57,7 +54,7 @@ void getPATHLocations(char *directories[], char *PATH)
 
 struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory)
 {
-    struct executable *executables = malloc(numberOfDirectory*4000*sizeof(struct executable));
+    struct executable *executables = malloc(numberOfDirectory*8192*sizeof(struct executable));
 
     int j = 0;
     for(int i = 0; i < numberOfDirectory; i++)
@@ -131,12 +128,11 @@ int splitString(char *split[], char *string, char *delim)
 {
     char *stringDup = strdup(string);
     char *arg = strtok(stringDup, delim);
-    size_t size = PATH_MAX;
 
     int argc = 0;
     while (arg != NULL)
     {
-        strncpy(split[argc], arg, size);
+        strncpy(split[argc], arg, PATH_MAX);
         argc++;
         arg = strtok(NULL, delim);
     }
@@ -182,8 +178,7 @@ void executeCommand(char *commandString, struct executable *executables)
         {
             if (strcmp(argv[0], executables[i].name) == 0)
             {
-                size_t size = PATH_MAX;
-                snprintf(commandPath, size,"%s/%s", executables[i].path, executables[i].name);
+                snprintf(commandPath, PATH_MAX,"%s/%s", executables[i].path, executables[i].name);
                 programExists = 1;
                 break;
             }

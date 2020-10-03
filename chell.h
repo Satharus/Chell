@@ -4,16 +4,20 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <limits.h>
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h>
 
 #define VERSION 0.05
 
+#define ARG_MAX sysconf(_SC_ARG_MAX)
+
+
 struct executable
 {
-    char name[40];
-    char path[40];
+    char name[NAME_MAX + 1];
+    char path[PATH_MAX + 1];
 };
 
 int getPATHLocationCount(char *PATH);
