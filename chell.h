@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h> 
+#include "chellin.h"
 
 #define VERSION 0.03
 
