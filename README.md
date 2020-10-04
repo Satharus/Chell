@@ -15,7 +15,7 @@ It's not.
 
 #### Running Chell
 
-Just run ```gcc chell.c -o chell``` and then ```./chell``` from any existing shell and you will get the chell "bash-like" prompt.
+Just run ```gcc -o bin/chell src/chell.c src/chad-readline.c``` and then ```./bin/chell``` or ```make && make run``` from any existing shell and you will get the chell "bash-like" prompt.
 
 #### Demo
 
