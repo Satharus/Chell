@@ -4,17 +4,26 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <limits.h>
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h> 
 #include "chellin.h"
 
-#define VERSION 0.03
+#define VERSION 0.05
+#define SHELL_NAME "Chell"
+#define ARG_MAX sysconf(_SC_ARG_MAX)
+
+#define max(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a > _b ? _a : _b; })
+
 
 struct executable
 {
-    char name[40];
-    char path[40];
+    char name[NAME_MAX + 1];
+    char path[PATH_MAX + 1];
 };
 
 int getPATHLocationCount(char *PATH);
