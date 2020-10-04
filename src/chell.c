@@ -12,14 +12,12 @@ int main()
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
-    size_t size = ARG_MAX;
-    char *command = (char*) malloc(sizeof(char)*size);
-
+    char *command;
     while (1)
     {
         initPrompt();
         //Command input
-        getcommand(&command, &size);
+        command = readline("");  
         
         //If not an empty command
         if (strlen(command) != 0 && !isWhiteSpaces(command))
