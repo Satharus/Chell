@@ -1,2 +1,4 @@
 chell
-compiled/
+obj/
+bin/
+

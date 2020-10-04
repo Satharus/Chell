@@ -19,8 +19,11 @@ ifeq ($(CC), gcc)
 else
 	EXT = cpp
 endif
-SOURCE = $(foreach var, $(FILES), $(var).$(EXT) )
-COMPILED_SOURCE = $(foreach var, $(FILES), compiled/$(var).o )
+SOURCE = $(foreach var, $(FILES), src/$(var).$(EXT) )
+COMPILED_SOURCE = $(foreach var, $(FILES), obj/$(var).o )
+
+
+all: $(PROJ)
 
 # Defined functions
 help:
@@ -37,21 +40,23 @@ help:
 
 run: $(PROJ)
 	@echo ----- running $(PROJ) -----
-	@./$(PROJ)
+	@./bin/$(PROJ)
+
 
 build: $(PROJ)
 
-compiled/%.o: %.$(EXT)
-	@if [ ! -d "compiled" ]; then mkdir compiled; fi
+obj/%.o: src/%.$(EXT)
+	@if [ ! -d "obj" ]; then mkdir obj; fi
 	@echo Compiling $< ...
 	@$(CC) -c $< -o $@
 	@echo done compiling $<
 	
 $(PROJ): $(COMPILED_SOURCE)
+	@if [ ! -d "bin" ]; then mkdir bin; fi
 	@echo Building $@ ...
-	@$(CC) $(COMPILED_SOURCE) -o $(PROJ)
+	@$(CC) $(COMPILED_SOURCE) -o bin/$(PROJ)
 	@echo Build completed successfully
-	@echo execute ./$(PROJ) to run the program
+	@echo execute ./bin/$(PROJ) or make run to run the program
 
 clean:
 	@for file in $(COMPILED_SOURCE) $(PROJ); do \
@@ -59,5 +64,7 @@ clean:
 			echo deleting $$file; \
 			rm $$file; \
 		fi \
-	done
+	done; \
+        [ -d obj ] && rm -d obj; \
+        [ -d bin ] && rm -r bin;
 	@echo Done
