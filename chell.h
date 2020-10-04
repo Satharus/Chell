@@ -7,7 +7,8 @@
 #include <limits.h>
 #include <dirent.h>
 #include <errno.h>
-#include <signal.h>
+#include <signal.h> 
+#include "chellin.h"
 
 #define VERSION 0.05
 #define SHELL_NAME "Chell"

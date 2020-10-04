@@ -19,11 +19,8 @@ int main()
     {
         initPrompt();
         //Command input
-        getline(&command, &size, stdin);
-
-        //Delete the newline
-        command[strlen(command)-1] = 0;
-
+        getcommand(&command, &size);
+        
         //If not an empty command
         if (strlen(command) != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
