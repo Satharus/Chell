@@ -36,14 +36,51 @@ char escape_detected(char input, unsigned char *escapeCharacter)
     return -1;
 }
 
-char handle_special(char input, char *line, int* cursor)
+char handle_special(char input, char *line, int* cursor, int *currentLength)
 {
+    //TODO: Make using backspace more natural, the feature feels wrong right now.
     if (input == 127) //Backspace
     {
         if (*cursor > 0)
         {
-            line[--*cursor] = 0;
-            printf("%s", "\b \b");
+            if ((*cursor) == (*currentLength)-1)
+            {
+                line[--*cursor] = '\0';
+                (*currentLength)--;
+                printf("%s", "\b \b");
+            }
+            else //not at the end
+            {
+                //Shift all to the left
+                for (int i = *cursor; i < *currentLength; i++)
+                    line[i-1] = line[i];      
+
+                //decrement the length
+                (*currentLength)--;
+
+                //calculate the number of movements needed forward
+                int forward = *currentLength - *cursor;
+                //move to the right
+                for (int i = 0; i < forward; i++)
+                {
+                    printf("%c%c%c", 27, 91, RIGHT_ARROW + 'A');
+                }
+                //go back and delete on the way
+                for (int i = 0; i < *currentLength; i++) 
+                {
+                    printf("%s", "\b \b");
+                }
+
+                //move the cursor back
+                cursor--;
+
+                //print the new line
+                printf("%s", line);
+
+                //Go back to the original cursor position
+                for (int i = 0; i < forward-1; i++)
+                    printf("%c%c%c", 27, 91, LEFT_ARROW + 'A');
+            }
         }
     }
     else if (input == '\t') 
@@ -55,11 +92,22 @@ char handle_special(char input, char *line, int* cursor)
     return 1;
 }
 
+int cursor = 0; //Where the cursor is respective to line.
+int currentLength = 1;
+void clearBuffer()
+{
+    cursor = 0;
+    currentLength = 1;
+}
+
 char *readline(char *prompt)
 {
     printf(prompt);
-    char *line = (char*) malloc(sizeof(char)*ARG_MAX);
-    int cursor = 0;
+    char *line = (char*) malloc(sizeof(char)*ARG_MAX);   //Current input
+    
+    cursor = 0;
+    currentLength = 1;
+
     char input;
     unsigned char escapeCharacter;
 
@@ -69,8 +117,23 @@ char *readline(char *prompt)
         if (status == 0 || status == 1) continue;
         else if(status ==  2) //Finished checking
         {
-            if (escapeCharacter == LEFT_ARROW);  //Move Left
-            if (escapeCharacter == RIGHT_ARROW); //Move right
+            if (escapeCharacter == LEFT_ARROW)  //Move Left
+            {
+                if (cursor > 0)
+                {
+                    cursor--;
+                    printf("%c%c%c", 27, 91, LEFT_ARROW + 'A');
+                }
+                
+            }
+            else if (escapeCharacter == RIGHT_ARROW) //Move right
+            {
+                if (cursor < currentLength-1)
+                {
+                    printf("%c%c%c", 27, 91, RIGHT_ARROW + 'A');
+                    cursor++;
+                }
+            }
             if (escapeCharacter == UP_ARROW);    //History up
             if (escapeCharacter == DOWN_ARROW);  //History down
         }
@@ -78,26 +141,58 @@ char *readline(char *prompt)
         {
             if (input == 0xA) //Enter
             {
-                line[cursor] = '\0';
+                line[currentLength-1] = '\0';
                 printf("\n");
+                clearBuffer();
                 return line;
             }
-            else if(!handle_special(input, line, &cursor))
+            else if(!handle_special(input, line, &cursor, &currentLength))
             {
                 if (cursor < ARG_MAX)
                 {
-                    line[cursor] = input;
-                    putchar(input);
-                    cursor++;
+                    if (cursor == currentLength-1)
+                    {                    
+                        line[cursor] = input;
+                        putchar(input);
+                        currentLength++;
+                        cursor++;
+                    }
+                    else
+                    {
+                        //Save the location of the cursor
+                        printf("%c%c%c", 27, 91, 's');
+                        //Shift all of the characters after the cursor to the right.
+                        for (int i = currentLength; i > cursor; i--)
+                            line[i] = line[i-1];
+
+                        //Increment the length for the newly added character.
+                        currentLength++;
+
+                        //Place the new character.
+                        line[cursor] = input;
+                        
+                        //print the rest of the new characters
+                        for (int i = cursor; i < currentLength; i++)
+                            putchar(line[i]);
+                        
+                        //Load the location of the cursor
+                        printf("%c%c%c", 27, 91, 'u');
+
+                        //Emulate a right key press
+                        printf("%c%c%c", 27, 91, RIGHT_ARROW + 'A');
+                        cursor++;
+                    }
                 }
             }
         }
     }
 }
 
-
-
-
+// //1 -> right, 0 -> left
+// void shiftAllCharacter(char direction, char *str, int startIndex, int lastIndex, char toInsert)
+// {
+//     
+// }
 
 /*
    The following is a small implementation for getch() taken from

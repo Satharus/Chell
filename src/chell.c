@@ -2,6 +2,8 @@
 
 int main()
 {
+//     cursor = -1;
+//     currentLength = 0;
     signal(SIGINT, sigintHandler);
     int numberOfDirs = getPATHLocationCount(getenv("PATH"));
     char *PATHdirs[numberOfDirs];
@@ -18,7 +20,7 @@ int main()
         initPrompt();
         //Command input
         command = readline("");  
-        
+       
         //If not an empty command
         if (strlen(command) != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
@@ -235,6 +237,7 @@ void sigintHandler(int signal_number)
     signal(SIGINT, sigintHandler);
     printf("\n");
     initPrompt();
+    clearBuffer();
     fflush(stdout);
 }
 
