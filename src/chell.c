@@ -3,8 +3,6 @@
 
 int main()
 {
-//     cursor = -1;
-//     currentLength = 0;
     signal(SIGINT, sigintHandler);
     int numberOfDirs = getPATHLocationCount(getenv("PATH"));
     char *PATHdirs[numberOfDirs];
@@ -146,7 +144,9 @@ int splitCommand(char *argv[], char *command)
 
 void executeCommand(char *commandString, struct executable *executables)
 {
-    if (strncmp(commandString, "exit", 4) == 0 || strncmp(commandString, "quit", 4) == 0 || strncmp(commandString, "q", 1) == 0)
+    if (strncmp(commandString, "exit", strlen(commandString)) == 0 ||
+        (strncmp(commandString, "quit", strlen(commandString)) == 0  && strlen(commandString) == 4)||
+        (strncmp(commandString, "q", strlen(commandString)) == 0 && strlen(commandString) == 1))
         exit(0);
 
     pid_t processID;
