@@ -51,37 +51,35 @@ char handle_special(char input, char *line, int* cursor, int *currentLength)
             }
             else //not at the end
             {
-		//Shift all to the left
-		for (int i = *cursor; i < *currentLength; i++) 
-	 	    line[i-1] = line[i];       
-		
-		//decrement the length 
-	        (*currentLength)--;
-		
-		//calculate the number of movements needed forward
-		int forward = *currentLength - *cursor; 
-		//move to the right 
-     		for (int i = 0; i < forward; i++) 
-		{ 
-	            printf("%c%c%c", 27, 91, RIGHT_ARROW + 'A'); 
-		}  
-		//go back and delete on the way
-		for (int i = 0; i < *currentLength; i++)  
-		{ 
-		    printf("%s", "\b \b");
-		} 
+                //Shift all to the left
+                for (int i = *cursor; i < *currentLength; i++) 
+                    line[i-1] = line[i];       
 
-		//move the cursor back
-		(*cursor)--;
+                //decrement the length 
+                (*currentLength)--;
 
-		//print the new line
-		printf("%.*s", (*currentLength)-1, line);
+                //calculate the number of movements needed forward
+                int forward = *currentLength - *cursor; 
+                //move to the right 
+                for (int i = 0; i < forward; i++) 
+                { 
+                    printf("%c%c%c", 27, 91, RIGHT_ARROW + 'A'); 
+                }  
+                //go back and delete on the way
+                for (int i = 0; i < *currentLength; i++)  
+                { 
+                    printf("%s", "\b \b");
+                } 
 
-		//Go back to the original cursor position
-		for (int i = 0; i < forward; i++) 
-		{
-		    printf("%c%c%c", 27, 91, LEFT_ARROW + 'A'); 
-		}
+                //move the cursor back
+                (*cursor)--;
+
+                //print the new line
+                printf("%.*s", (*currentLength)-1, line);
+
+                //Go back to the original cursor position
+                for (int i = 0; i < forward; i++) 
+                    printf("%c%c%c", 27, 91, LEFT_ARROW + 'A'); 
             }
         }
     }
