@@ -186,7 +186,7 @@ void executeCommand(char *commandString, struct executable *executables)
         {
             if (strncmp(argv[0], executables[i].name, max(strlen(executables[i].name), strlen(argv[0]))) == 0)
             {
-                snprintf(commandPath, PATH_MAX,"%s/%s", executables[i].path, executables[i].name);
+                snprintf(commandPath, NAME_MAX + PATH_MAX + 2,"%s/%s", executables[i].path, executables[i].name);
                 programExists = 1;
                 break;
             }

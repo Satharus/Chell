@@ -6,9 +6,6 @@
 #include "defs.h"
 #include "chad-history.h"
 
-// extern int cursor; //Where the cursor is, relating to line.
-// extern int currentLength; 
-
 /* Function to detect arrow key pressed in incoming stream
       Returns: 2 if finished checked, 1 if still checking, 0 if initially checked, -1 if there are no special characters
       arrow codes:
@@ -25,8 +22,6 @@ char handle_special(char input, char *line, int* cursor, int *currentLength);
 void clearBuffer();
 
 char *readline(char *prompt);
-
-static struct termios old, newi;
 
 // Initialize new terminal i/o settings 
 void initTermios(int echo);

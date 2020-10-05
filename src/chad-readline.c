@@ -233,6 +233,7 @@ void replaceCommandDisplay(char *prompt, char *command, char *line)
     strcpy(line, command);
 }
 
+static struct termios old, newi;
 /*
    The following is a small implementation for getch() taken from
    https://www.includehelp.com/c-programs/gotoxy-clrscr-getch-getche-for-gcc-linux.aspx

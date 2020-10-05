@@ -1,6 +1,11 @@
 #include "chad-history.h"
 #include "chell.h"
 
+
+char *history_file = (char *)NULL;
+struct history_handler historyHandler = {NULL, NULL, NULL};
+char * buffer = (char *)NULL;
+
 struct history_manager {
     char **history_list;
     int history_index;

@@ -8,15 +8,11 @@
 #ifndef CHAD_HISTORY
 #define CHAD_HISTORY
 
-char *history_file;
-
 struct history_handler {
     char *(*getNext)(char *);
     char *(*getPrev)(char *);
     void (*add)(char *);
-} historyHandler;
-
-char *buffer;
+};
 
 void initHistory(void);
 void loadHistory(void);

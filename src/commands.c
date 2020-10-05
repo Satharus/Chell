@@ -26,7 +26,7 @@ void cd(char *path)
     int status = chdir(path);
 
     if (status == 0)
-        setenv("PWD", getcwd(NULL, 4096), 1);
+        setenv("PWD", getcwd(NULL, 0), 1);
     else if (status == -1)
     {
         if (errno == EACCES)
