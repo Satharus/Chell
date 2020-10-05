@@ -7,8 +7,6 @@
 
 #ifndef CHAD_HISTORY
 #define CHAD_HISTORY
-#define BATCH_SIZE 1024
-#define HISTORY_FILE "/.chell_history"
 
 char *history_file;
 

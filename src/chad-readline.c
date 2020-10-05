@@ -38,7 +38,6 @@ char escape_detected(char input, unsigned char *escapeCharacter)
 
 char handle_special(char input, char *line, int* cursor, int *currentLength)
 {
-    //TODO: Make using backspace more natural, the feature feels wrong right now.
     if (input == 127) //Backspace
     {
         if (*cursor > 0)

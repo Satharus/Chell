@@ -21,7 +21,7 @@ void initHistory() {
 }
 
 void initNewHistory() {
-    new_history.history_list = calloc(BATCH_SIZE, sizeof(char *));
+    new_history.history_list = calloc(HISTORY_SIZE, sizeof(char *));
     new_history.history_index = new_history.history_size = 0;
 }
 
@@ -62,7 +62,7 @@ char *getPrev(char *command) {
 }
 
 void addHistory(char *command) {
-    if(new_history.history_size == BATCH_SIZE) reloadHistory();
+    if(new_history.history_size == HISTORY_SIZE) reloadHistory();
     new_history.history_list[new_history.history_size++] = command;
     new_history.history_index = new_history.history_size;
     old_history.history_index = old_history.history_size;
