@@ -5,7 +5,10 @@
 #define SHELL_NAME "Chell"
 #define HISTORY_SIZE 1024
 #define HISTORY_FILE "/.chell_history"
+
+#ifndef ARG_MAX // it's already defined in sys/syslimits.h on macos
 #define ARG_MAX sysconf(_SC_ARG_MAX)
+#endif
 
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \

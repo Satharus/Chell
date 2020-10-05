@@ -107,7 +107,7 @@ void clearBuffer()
 
 char *readline(char *prompt)
 {
-    printf(prompt);
+    printf("%s", prompt);
     char *line = (char*) malloc(sizeof(char)*ARG_MAX);   //Current input
     
     cursor = 0;
@@ -116,7 +116,7 @@ char *readline(char *prompt)
     char input;
     unsigned char escapeCharacter;
 
-    while(input = getch())
+    while((input = getch()))
     {
         char status = escape_detected(input, &escapeCharacter);
         if (status == 0 || status == 1) continue;
@@ -221,6 +221,8 @@ char *readline(char *prompt)
             }
         }
     }
+
+    return NULL;
 }
 
 void replaceCommandDisplay(char *prompt, char *command, char *line)

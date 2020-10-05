@@ -1,4 +1,5 @@
 #include "chad-history.h"
+#include "chell.h"
 
 struct history_manager {
     char **history_list;

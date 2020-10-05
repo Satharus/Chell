@@ -1,6 +1,8 @@
 #include "chell.h"
 #include "commands.h"
 
+static int nExecutables = 0;
+
 int main()
 {
     signal(SIGINT, sigintHandler);
@@ -24,7 +26,7 @@ int main()
         command = readline("");  
        
         //If not an empty command
-        if (strlen(command) != 0 && !isWhiteSpaces(command))
+        if (command && strlen(command) != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
     }
 
