@@ -18,7 +18,6 @@ struct executable
 int getPATHLocationCount(char *PATH);
 void getPATHLocations(char *directories[], char *PATH);
 
-int nExecutables = 0;
 struct executable *getFilesFromDirectories(char **dir, int numberOfDirectory);
 
 
