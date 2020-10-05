@@ -102,6 +102,7 @@ void saveHistory() {
     file = fopen(history_file, "a");
     if(file != NULL) {
         for(int i=0; i<new_history.history_size; i++) {
+            if (strlen(new_history.history_list[i]) != 0 && !isWhiteSpaces(new_history.history_list[i]))
             fprintf(file, "%s\n", new_history.history_list[i]);
         }
         fclose(file);
