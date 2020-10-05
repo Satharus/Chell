@@ -16,5 +16,9 @@
 #define DOWN_ARROW      1
 #define RIGHT_ARROW     2
 #define LEFT_ARROW      3
+#define HOME            7
+#define END             5
+#define INSERT          0x32    //The character '2' in <esc>[2~
+#define DELETE          0x33    //The character '3' in <esc>[3~
 
 #endif

@@ -10,7 +10,7 @@
 */ 
 char escape_detected(char input, unsigned char *escapeCharacter)
 {
-    //Arrows are ANSI escapes that produce the sequence 27, 91, number
+    //Arrows are ANSI escapes that produce the sequence 27(ESC), 91([), (A|B|C|D)
     //Where number is the value of the arrow itself.
     static unsigned char characterBeingChecked;
 
@@ -20,12 +20,18 @@ char escape_detected(char input, unsigned char *escapeCharacter)
     }
     else if (characterBeingChecked == 2) //Special key (ANSI ESC)
     {
-        if ('A' <= input && input <= 'D')
+        //Arrow keys are ESC[(A|B|C|D), End and Home are ESC[(F|H)
+        if (('A' <= input && input <= 'D') || (input == 'F') || (input == 'H'))
         {
             *escapeCharacter = input - 'A';
         }
+        //Del, Ins, etc.. are ESC[X~ where X is an int
+        else if (getch() == '~')
+        {
+            *escapeCharacter = input;
+        }
         else
-            *escapeCharacter = 0xFF; //Not an arrow for now, could add more options later.
+            *escapeCharacter = 0xFF; //Not an arrow or a functional key for now, could add more options later.
         characterBeingChecked = 0;
         return 2;
     }
@@ -147,6 +153,22 @@ char *readline(char *prompt)
                     replaceCommandDisplay(prompt, cmd, line);
                 }
                 cursor = strlen(line);
+            }
+            else if (escapeCharacter == DELETE)
+            {
+
+            }
+            else if (escapeCharacter == HOME)
+            {
+                //Go to the start
+            }
+            else if (escapeCharacter == END)
+            {
+                //Go to the end
+            }
+            else if (escapeCharacter == INSERT)
+            {
+                //TODO: Maybe later, implement INSERT mode
             }
         }
         else
