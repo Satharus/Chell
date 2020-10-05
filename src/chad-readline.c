@@ -134,8 +134,21 @@ char *readline(char *prompt)
                     cursor++;
                 }
             }
-            if (escapeCharacter == UP_ARROW);    //History up
-            if (escapeCharacter == DOWN_ARROW);  //History down
+            else if (escapeCharacter == UP_ARROW) {   //History up
+                char *cmd = historyHandler.getPrev(line);
+                if(cmd != NULL) {
+                    replaceCommandDisplay(prompt, cmd, line);
+                }
+                cursor = strlen(line);
+            }
+            else if (escapeCharacter == DOWN_ARROW) { //History down
+                char *cmd = historyHandler.getNext(line);
+                // printf("\n%d -> %s\n", cmd, cmd);
+                if(cmd != NULL) {
+                    replaceCommandDisplay(prompt, cmd, line);
+                }
+                cursor = strlen(line);
+            }
         }
         else
         {
@@ -143,6 +156,7 @@ char *readline(char *prompt)
             {
                 line[currentLength-1] = '\0';
                 printf("\n");
+                historyHandler.add(line);
                 clearBuffer();
                 return line;
             }
@@ -188,11 +202,13 @@ char *readline(char *prompt)
     }
 }
 
-// //1 -> right, 0 -> left
-// void shiftAllCharacter(char direction, char *str, int startIndex, int lastIndex, char toInsert)
-// {
-//     
-// }
+void replaceCommandDisplay(char *prompt, char *command, char *line)
+{
+    int len = strlen(prompt) + strlen(line);
+    while(len--) printf("\b \b");
+    printf("%s%s", prompt, command);
+    strcpy(line, command);
+}
 
 /*
    The following is a small implementation for getch() taken from

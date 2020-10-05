@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "defs.h"
+#include "chad-history.h"
 
 // extern int cursor; //Where the cursor is, relating to line.
 // extern int currentLength; 
@@ -38,3 +39,5 @@ char getch(void);
 
 // Read 1 character with echo
 char getche(void);
+
+void replaceCommandDisplay(char *prompt, char *command, char *line);

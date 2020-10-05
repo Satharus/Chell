@@ -7,6 +7,7 @@
 
 #include "defs.h"
 #include "chad-readline.h"
+#include "chad-history.h"
 
 struct executable
 {
