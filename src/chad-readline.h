@@ -2,9 +2,12 @@
 #include <unistd.h>
 #include <termios.h>
 #include <stdlib.h>
+#include <string.h>
 #include "defs.h"
 #include "chad-history.h"
 
+// extern int cursor; //Where the cursor is, relating to line.
+// extern int currentLength; 
 
 /* Function to detect arrow key pressed in incoming stream
       Returns: 2 if finished checked, 1 if still checking, 0 if initially checked, -1 if there are no special characters
@@ -17,7 +20,9 @@
 char escape_detected(char input, unsigned char *escapeCharacter);
 
 //Returns 1 if handled a key, returns 0 otherwise.
-char handle_special(char input, char *line, int* cursor);
+char handle_special(char input, char *line, int* cursor, int *currentLength);
+
+void clearBuffer();
 
 char *readline(char *prompt);
 

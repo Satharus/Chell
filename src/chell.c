@@ -1,4 +1,5 @@
 #include "chell.h"
+#include "commands.h"
 
 int main()
 {
@@ -21,7 +22,7 @@ int main()
         initPrompt();
         //Command input
         command = readline("");  
-        
+       
         //If not an empty command
         if (strlen(command) != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
@@ -146,13 +147,17 @@ int splitCommand(char *argv[], char *command)
 
 void executeCommand(char *commandString, struct executable *executables)
 {
-    if (strncmp(commandString, "exit", 4) == 0 || strncmp(commandString, "quit", 4) == 0 || strncmp(commandString, "q", 1) == 0) {
+    if (strncmp(commandString, "exit", strlen(commandString)) == 0 ||
+        (strncmp(commandString, "quit", strlen(commandString)) == 0  && strlen(commandString) == 4)||
+        (strncmp(commandString, "q", strlen(commandString)) == 0 && strlen(commandString) == 1))
+    {
         saveHistory();
         exit(0);
     } 
 
     pid_t processID;
     char *argv[PATH_MAX];
+    struct command* builtin;
 
     //Allocate the argv array
     for (int i = 0; i < PATH_MAX; i++)
@@ -186,7 +191,12 @@ void executeCommand(char *commandString, struct executable *executables)
         }
     }
 
-    if (programExists)
+    // check if the executed command is built into Chell
+    if ((builtin = is_builtin(argv[0])))
+    {
+        builtin->func(argv[1]);
+    }
+    else if (programExists)
     {
         processID = fork();
         if (processID == 0)
@@ -197,13 +207,6 @@ void executeCommand(char *commandString, struct executable *executables)
         }
         else
             waitpid(processID, 0, 0);
-    }
-    else if (strncmp(argv[0], "cd", 2) == 0)
-    {
-        if (argv[1] != NULL)
-            cd(argv[1]);
-        else
-            cd(getenv("HOME"));
     }
     else if (!programExists)
     {
@@ -218,28 +221,12 @@ void executeCommand(char *commandString, struct executable *executables)
 
 }
 
-void cd(char *path)
-{
-    int status = chdir(path);
-
-    if (status == 0)
-        setenv("PWD", getcwd(NULL, 4096), 1);
-    else if (status == -1)
-    {
-        if (errno == EACCES)
-            printf("%s: Permission denied.\n", path);
-        else if (errno == ENOENT)
-            printf("%s: Doesn't exist.\n", path);
-        else if (errno == ENOTDIR)
-            printf("%s: Not a directory.\n", path);
-    }
-}
-
 void sigintHandler(int signal_number)
 {
     signal(SIGINT, sigintHandler);
     printf("\n");
     initPrompt();
+    clearBuffer();
     fflush(stdout);
 }
 
