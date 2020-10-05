@@ -15,13 +15,12 @@ all: $(PROG)
 
 # compile chell  
 $(PROG): $(SOURCE_FILES) $(HEADER_FILES)
-	@if [ ! -d "bin" ]; then mkdir bin; fi
-	$(CXX) $(CFLAGS) $(SOURCE_FILES) -o bin/$(PROG) $(LDFLAGS)
+	$(CXX) $(CFLAGS) $(SOURCE_FILES) -o $(PROG) $(LDFLAGS)
 
 # cleaning everything that can be automatically recreated with "make"
 clean:
-	rm -r obj bin
+	rm $(PROG)
 
 run: 
 	@echo ----- running $(PROG) -----
-	@./bin/$(PROG)
+	@./$(PROG)
