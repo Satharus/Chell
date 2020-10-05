@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <stdlib.h>
 #include "defs.h"
+#include "chad-history.h"
 
 
 /* Function to detect arrow key pressed in incoming stream
@@ -33,3 +34,5 @@ char getch(void);
 
 // Read 1 character with echo
 char getche(void);
+
+void replaceCommandDisplay(char *prompt, char *command, char *line);

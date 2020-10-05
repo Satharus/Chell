@@ -5,16 +5,20 @@
 
 #include "defs.h"
 
+#ifndef CHAD_HISTORY
+#define CHAD_HISTORY
 #define BATCH_SIZE 1024
 #define HISTORY_FILE "/.chell_history"
 
 char *history_file;
 
 struct history_handler {
-    char *(*next)();
-    char *(*prev)();
+    char *(*getNext)(char *);
+    char *(*getPrev)(char *);
     void (*add)(char *);
-} handler;
+} historyHandler;
+
+char *buffer;
 
 void initHistory(void);
 void loadHistory(void);
@@ -22,8 +26,9 @@ void saveHistory(void);
 void reloadHistory(void);
 void initNewHistory(void);
 
-char *getNext(void);
-char *getPrev(void);
+char *getNext(char *command);
+char *getPrev(char *command);
 void addHistory(char *command);
 
-extern struct history_handler handler;
+extern struct history_handler historyHandler;
+#endif

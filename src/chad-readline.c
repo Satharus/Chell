@@ -71,8 +71,21 @@ char *readline(char *prompt)
         {
             if (escapeCharacter == LEFT_ARROW);  //Move Left
             if (escapeCharacter == RIGHT_ARROW); //Move right
-            if (escapeCharacter == UP_ARROW);    //History up
-            if (escapeCharacter == DOWN_ARROW);  //History down
+            if (escapeCharacter == UP_ARROW) {   //History up
+                char *cmd = historyHandler.getPrev(line);
+                if(cmd != NULL) {
+                    replaceCommandDisplay(prompt, cmd, line);
+                }
+                cursor = strlen(line);
+            }
+            if (escapeCharacter == DOWN_ARROW) { //History down
+                char *cmd = historyHandler.getNext(line);
+                // printf("\n%d -> %s\n", cmd, cmd);
+                if(cmd != NULL) {
+                    replaceCommandDisplay(prompt, cmd, line);
+                }
+                cursor = strlen(line);
+            }
         }
         else
         {
@@ -80,6 +93,7 @@ char *readline(char *prompt)
             {
                 line[cursor] = '\0';
                 printf("\n");
+                historyHandler.add(line);
                 return line;
             }
             else if(!handle_special(input, line, &cursor))
@@ -96,7 +110,12 @@ char *readline(char *prompt)
 }
 
 
-
+void replaceCommandDisplay(char *prompt, char *command, char *line) {
+    int len = strlen(prompt) + strlen(line);
+    while(len--) printf("\b \b");
+    printf("%s%s", prompt, command);
+    strcpy(line, command);
+}
 
 
 /*

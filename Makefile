@@ -9,7 +9,7 @@ PROJ = chell
 CC = gcc
 
 # list of all .c/.cpp files to be compiled (space separated, without extension)
-FILES = chell chad-readline
+FILES = chell chad-readline chad-history
 
 #--------(DO NOT EDIT BELOW)--------#
 

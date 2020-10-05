@@ -12,6 +12,9 @@ int main()
     getPATHLocations(PATHdirs, getenv("PATH"));
     struct executable *executables = getFilesFromDirectories(PATHdirs, numberOfDirs);
 
+    // Initialize command history handling functions
+    initHistory();
+
     char *command;
     while (1)
     {
@@ -143,8 +146,10 @@ int splitCommand(char *argv[], char *command)
 
 void executeCommand(char *commandString, struct executable *executables)
 {
-    if (strncmp(commandString, "exit", 4) == 0 || strncmp(commandString, "quit", 4) == 0 || strncmp(commandString, "q", 1) == 0)
+    if (strncmp(commandString, "exit", 4) == 0 || strncmp(commandString, "quit", 4) == 0 || strncmp(commandString, "q", 1) == 0) {
+        saveHistory();
         exit(0);
+    } 
 
     pid_t processID;
     char *argv[PATH_MAX];

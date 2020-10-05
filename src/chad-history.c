@@ -9,14 +9,15 @@ struct history_manager {
 struct history_manager old_history, new_history;
 
 void initHistory() {
-    history_file = (char*) malloc(strlen(getenv("HOME")) + strlen(HISTORY_FILE) + 1);
+    history_file = (char *) malloc(sizeof(char)*(strlen(getenv("HOME")) + strlen(HISTORY_FILE) + 1));
     strcpy(history_file, getenv("HOME"));
     strcat(history_file, HISTORY_FILE);
     initNewHistory();
     loadHistory();
-    handler.next = *getNext;
-    handler.prev = *getPrev;
-    handler.add = *addHistory;
+    historyHandler.getNext = *getNext;
+    historyHandler.getPrev = *getPrev;
+    historyHandler.add = *addHistory;
+    buffer = (char *) malloc(sizeof(char)*ARG_MAX);
 }
 
 void initNewHistory() {
@@ -24,43 +25,40 @@ void initNewHistory() {
     new_history.history_index = new_history.history_size = 0;
 }
 
-char *getNext() {
-    char *command = (char *) malloc(sizeof(char)*ARG_MAX);
+char *getNext(char *command) { // Test fail on first cmd to return buffer;
     if (new_history.history_index == -1) {
-        if (old_history.history_index == old_history.history_size-1) {
+        if (old_history.history_index == old_history.history_size - 1) {
             old_history.history_index++;
-            strcpy(command, new_history.history_list[++new_history.history_index]);
+            return new_history.history_list[++new_history.history_index];
         } else {
-            strcpy(command, old_history.history_list[++old_history.history_index]);
+            return old_history.history_list[++old_history.history_index];
         }
-    } else if (new_history.history_index != new_history.history_size) {
-        strcpy(command, new_history.history_list[++new_history.history_index]);
+    } else if (new_history.history_index < new_history.history_size - 1) {
+        return new_history.history_list[++new_history.history_index];
     } else {
-        free(command);
-        command = NULL;
+        if (new_history.history_index == new_history.history_size - 1) new_history.history_index++;
+        // if(new_history.history_size == 0) return command;
+        return buffer;
     }
-    return command;
 }
 
-char *getPrev() {
-    char *command = (char *) malloc(sizeof(char)*ARG_MAX);
+char *getPrev(char *command) {
+    if(new_history.history_index == new_history.history_size) strcpy(buffer, command);
     if (new_history.history_index == -1) {
         if(old_history.history_index > 0) old_history.history_index--;
-        strcpy(command, old_history.history_list[old_history.history_index]);
+        return old_history.history_list[old_history.history_index];
     } else if (new_history.history_index == 0) {
         if(old_history.history_size != 0) {
             new_history.history_index --;
-            strcpy(command, old_history.history_list[--old_history.history_index]);
+            return old_history.history_list[--old_history.history_index];
         } else if (new_history.history_size != 0) {
-            strcpy(command, new_history.history_list[new_history.history_index]);
+            return new_history.history_list[new_history.history_index];
         } else {
-            free(command);
-            command = NULL;
+            return buffer;
         }
     } else {
-        strcpy(command, new_history.history_list[--new_history.history_index]);
+        return new_history.history_list[--new_history.history_index];
     }
-    return command;
 }
 
 void addHistory(char *command) {
