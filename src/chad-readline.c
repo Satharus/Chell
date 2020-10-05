@@ -31,7 +31,7 @@ char escape_detected(char input, unsigned char *escapeCharacter)
             *escapeCharacter = input;
         }
         else
-            *escapeCharacter = 0xFF; //Not an arrow or a functional key for now, could add more options later.
+            *escapeCharacter = 0xFF; //Not an arrow or a navigation key for now, could add more options later.
         characterBeingChecked = 0;
         return 2;
     }
