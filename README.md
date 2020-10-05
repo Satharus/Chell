@@ -15,7 +15,7 @@ It's not.
 
 #### Running Chell
 
-Just run ```gcc -Wall -o bin/chell src/*.c``` and then ```./bin/chell``` or ```make && make run``` from any existing shell and you will get the chell "bash-like" prompt.
+Just run ```gcc -Wall -o chell src/*.c``` and then ```./chell``` or ```make && make run``` from any existing shell and you will get the chell "bash-like" prompt.
 
 #### Demo
 
