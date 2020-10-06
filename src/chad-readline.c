@@ -253,7 +253,7 @@ void replaceCommandDisplay(char *prompt, char *command, char *line)
     printf("%s%s", prompt, command);
 
     // Set the current line to the command
-    currentLength = strlen(command) + 2;
+    currentLength = strlen(command) + 1;
     strcpy(line, command);
     cursor = strlen(line);
 }
