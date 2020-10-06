@@ -197,7 +197,20 @@ void executeCommand(char *commandString, struct executable *executables)
     // check if the executed command is built into Chell
     if ((builtin = is_builtin(argv[0])))
     {
-        builtin->func(argv[1]);
+        if (argv[1] != NULL && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
+            printf("\t%s - %s\n", builtin->name, builtin->help);
+        else
+        {
+            builtin->func(argv[1]);
+
+            if (builtin->returnsValue)
+            {
+                if (strcmp(argv[0], "history") == 0 && argv[1] != NULL)
+                {
+                    executeCommand(argv[1], executables);
+                }
+            }
+        }
     }
     else if (programExists)
     {

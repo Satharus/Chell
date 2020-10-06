@@ -110,16 +110,18 @@ char handle_special(char input, char *line, int* cursor, int *currentLength)
 
 int cursor = 0; //Where the cursor is respective to line.
 int currentLength = 1;
+char *line;
 void clearBuffer()
 {
     cursor = 0;
     currentLength = 1;
+    strcpy(line, "");
 }
 
 char *readline(char *prompt)
 {
     printf("%s", prompt);
-    char *line = (char*) calloc(ARG_MAX, sizeof(char));   //Current input
+    line = (char*) calloc(ARG_MAX, sizeof(char));   //Current input
     
     cursor = 0;
     currentLength = 1;
@@ -190,8 +192,9 @@ char *readline(char *prompt)
                 if (strlen(line) != 0 && !isWhiteSpaces(line))
                     historyHandler.add(line);
 
+                char *returnValue = strdup(line);
                 clearBuffer();
-                return line;
+                return returnValue;
             }
             else if(!handle_special(input, line, &cursor, &currentLength))
             {

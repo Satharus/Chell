@@ -9,6 +9,7 @@ struct command {
     char *name;
     void (*func)(char*);
     char *help;
+    char returnsValue;
 };
 
 struct command *is_builtin(char *name);

@@ -64,7 +64,7 @@ void addHistory(char *command)
     strcpy(history.history_list[history.history_size], command);
 
     history.history_size++;
-    history.history_index = history.history_size-1;
+    history.history_index = history.history_size;
 }
 
 void loadHistory()
@@ -122,3 +122,49 @@ void freeHistory()
     free(history_file);
 }
 
+char isNumeric(char *str)
+{
+    int len = strlen(str);
+    for (int i = 0; i < len; i++)
+    {
+        if (!isdigit(str[i]))
+            return 0;
+    }
+    return 1;
+}
+
+void historyCommand(char *arg)
+{
+    if (arg == NULL)
+    {
+        printf("History Size: %d\n", history.history_size);
+
+        for (int i = 0; i < history.history_size; i++)
+            printf("%d:\t%s\n", i+1, history.history_list[i]);
+        return;
+    }
+    else
+    {
+        if (strncmp(arg, "clear", 5) == 0)
+        {
+            FILE *file;
+            file = fopen(history_file, "w");
+            if(file != NULL)
+                fclose(file);
+
+            freeHistory();
+            initHistory();
+            printf("%s\n", "History cleared.");
+        }
+
+        if (isNumeric(arg))
+        {
+            int index = atoi(arg);
+            if (index > 0 &&  index < HISTORY_SIZE)
+                strcpy(arg, history.history_list[index-1]);
+        }
+    }
+
+
+
+}
