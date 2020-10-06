@@ -6,6 +6,8 @@
 #include "defs.h"
 #include "chad-history.h"
 
+char isWhiteSpaces(char *str);
+
 /* Function to detect arrow key pressed in incoming stream
       Returns: 2 if finished checked, 1 if still checking, 0 if initially checked, -1 if there are no special characters
       arrow codes:

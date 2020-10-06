@@ -30,4 +30,4 @@ void executeCommand(char *commandString, struct executable *executables);
 
 void sigintHandler(int signal_number);
 
-char isWhiteSpaces(char *str);
+

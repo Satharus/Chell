@@ -1,5 +1,16 @@
 #include "chad-readline.h"
 
+char isWhiteSpaces(char *str)
+{
+    int strLen = strlen(str);
+    for (int i = 0; i < strLen; i++)
+    {
+        if (str[i] != ' ' && str[i] != '\t')
+            return 0;
+    }
+    return 1;
+}
+
 /* Function to detect arrow key pressed in incoming stream
       Returns: 2 if finished checked, 1 if still checking, 0 if initially checked, -1 if there are no special characters
       arrow codes:
@@ -108,7 +119,7 @@ void clearBuffer()
 char *readline(char *prompt)
 {
     printf("%s", prompt);
-    char *line = (char*) malloc(sizeof(char)*ARG_MAX);   //Current input
+    char *line = (char*) calloc(ARG_MAX, sizeof(char));   //Current input
     
     cursor = 0;
     currentLength = 1;
@@ -139,20 +150,17 @@ char *readline(char *prompt)
                     cursor++;
                 }
             }
-            else if (escapeCharacter == UP_ARROW) {   //History up
-                char *cmd = historyHandler.getPrev(line);
-                if(cmd != NULL) {
+            else if (escapeCharacter == UP_ARROW) //History up
+            {
+                char *cmd = historyHandler.getPrev();
+                if(cmd != NULL)
                     replaceCommandDisplay(prompt, cmd, line);
-                }
-                cursor = strlen(line);
             }
-            else if (escapeCharacter == DOWN_ARROW) { //History down
-                char *cmd = historyHandler.getNext(line);
-                // printf("\n%d -> %s\n", cmd, cmd);
-                if(cmd != NULL) {
+            else if (escapeCharacter == DOWN_ARROW) //History down
+            {
+                char *cmd = historyHandler.getNext();
+                if(cmd != NULL)
                     replaceCommandDisplay(prompt, cmd, line);
-                }
-                cursor = strlen(line);
             }
             else if (escapeCharacter == DELETE)
             {
@@ -177,7 +185,11 @@ char *readline(char *prompt)
             {
                 line[currentLength-1] = '\0';
                 printf("\n");
-                historyHandler.add(line);
+ 
+                //Do not add empty commands to history
+                if (strlen(line) != 0 && !isWhiteSpaces(line))
+                    historyHandler.add(line);
+
                 clearBuffer();
                 return line;
             }
@@ -221,16 +233,26 @@ char *readline(char *prompt)
             }
         }
     }
-
     return NULL;
 }
 
 void replaceCommandDisplay(char *prompt, char *command, char *line)
 {
+    // Clear the current line
     int len = strlen(prompt) + strlen(line);
-    while(len--) printf("\b \b");
+    while(len)
+    {
+        printf("\b \b");
+        len--;
+    }
+ 
+    // Print new prompt + command
     printf("%s%s", prompt, command);
+
+    // Set the current line to the command
+    currentLength = strlen(command) + 2;
     strcpy(line, command);
+    cursor = strlen(line);
 }
 
 static struct termios old, newi;

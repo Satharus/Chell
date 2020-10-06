@@ -1,7 +1,7 @@
 #ifndef DEFS
 #define DEFS
 
-#define VERSION 0.05
+#define VERSION 0.07
 #define SHELL_NAME "Chell"
 #define HISTORY_SIZE 1024
 #define HISTORY_FILE "/.chell_history"

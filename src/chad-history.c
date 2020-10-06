@@ -3,125 +3,122 @@
 
 
 char *history_file = (char *)NULL;
-struct history_handler historyHandler = {NULL, NULL, NULL};
-char * buffer = (char *)NULL;
+int history_file_length;
 
-struct history_manager {
+struct history_handler historyHandler = {NULL, NULL, NULL};
+
+struct history_manager
+{
     char **history_list;
     int history_index;
     unsigned int history_size;
 };
 
-struct history_manager old_history, new_history;
+struct history_manager history;
 
-void initHistory() {
-    history_file = (char *) malloc(sizeof(char)*(strlen(getenv("HOME")) + strlen(HISTORY_FILE) + 1));
-    strcpy(history_file, getenv("HOME"));
-    strcat(history_file, HISTORY_FILE);
-    initNewHistory();
+void constructHistoryFilePath()
+{
+    history_file_length = strlen(getenv("HOME")) + strlen(HISTORY_FILE) + 1;
+    history_file = (char *) malloc(sizeof(char)*history_file_length);
+    strncpy(history_file, getenv("HOME"), strlen(getenv("HOME")));
+    strncat(history_file, HISTORY_FILE, strlen(HISTORY_FILE) + 1);
+}
+
+void initHistory()
+{
+    constructHistoryFilePath();
+
+    history.history_list = calloc(HISTORY_SIZE, sizeof(char *));
+    history.history_index = -1;
+    history.history_size = 0;
     loadHistory();
+
     historyHandler.getNext = *getNext;
     historyHandler.getPrev = *getPrev;
     historyHandler.add = *addHistory;
-    buffer = (char *) malloc(sizeof(char)*ARG_MAX);
 }
 
-void initNewHistory() {
-    new_history.history_list = calloc(HISTORY_SIZE, sizeof(char *));
-    new_history.history_index = new_history.history_size = 0;
+char *getNext(char *command)
+{
+    if (history.history_index < history.history_size)
+        history.history_index++;
+
+    return history.history_list[history.history_index];
 }
 
-char *getNext(char *command) { // Test fail on first cmd to return buffer;
-    if (new_history.history_index == -1) {
-        if (old_history.history_index == old_history.history_size - 1) {
-            old_history.history_index++;
-            return new_history.history_list[++new_history.history_index];
-        } else {
-            return old_history.history_list[++old_history.history_index];
-        }
-    } else if (new_history.history_index < new_history.history_size - 1) {
-        return new_history.history_list[++new_history.history_index];
-    } else {
-        if (new_history.history_index == new_history.history_size - 1) new_history.history_index++;
-        // if(new_history.history_size == 0) return command;
-        return buffer;
-    }
+char *getPrev(char *command)
+{
+    if (history.history_index > 0)
+        history.history_index--;
+
+
+    return history.history_list[history.history_index];
 }
 
-char *getPrev(char *command) {
-    if(new_history.history_index == new_history.history_size) strcpy(buffer, command);
-    if (new_history.history_index == -1) {
-        if(old_history.history_index > 0) old_history.history_index--;
-        return old_history.history_list[old_history.history_index];
-    } else if (new_history.history_index == 0) {
-        if(old_history.history_size != 0) {
-            new_history.history_index --;
-            return old_history.history_list[--old_history.history_index];
-        } else if (new_history.history_size != 0) {
-            return new_history.history_list[new_history.history_index];
-        } else {
-            return buffer;
-        }
-    } else {
-        return new_history.history_list[--new_history.history_index];
-    }
+void addHistory(char *command)
+{
+    history.history_size %= HISTORY_SIZE;
+
+    if (history.history_list[history.history_size] == NULL)
+        history.history_list[history.history_size] = (char *) malloc(sizeof(char)*ARG_MAX);
+    strcpy(history.history_list[history.history_size], command);
+
+    history.history_size++;
+    history.history_index = history.history_size-1;
 }
 
-void addHistory(char *command) {
-    if(new_history.history_size == HISTORY_SIZE) reloadHistory();
-    new_history.history_list[new_history.history_size++] = command;
-    new_history.history_index = new_history.history_size;
-    old_history.history_index = old_history.history_size;
-}
-
-void loadHistory() {
+void loadHistory()
+{
     FILE *file;
-    unsigned int count = 0;
 
     file = fopen(history_file, "r");
-    if(file != NULL) {
-        char c = fgetc(file);
-        while(c != EOF) {
-            if(c == '\n') count ++;
-            c = fgetc(file);
-        }
-
-        old_history.history_list = calloc(count, sizeof(char *));
-        old_history.history_size = count;
-        fseek(file, 0, SEEK_SET);
-        for(old_history.history_index = 0; old_history.history_index<count; old_history.history_index++) {
-            char *line = (char *) malloc(sizeof(char)*ARG_MAX);
-            int index = 0;
-            c = fgetc(file);
-            while(c != '\n') {
-                line[index++] = c;
-                c = fgetc(file);
+    if(file != NULL)
+    {
+        while(1)
+        {
+            history.history_index++;
+            history.history_list[history.history_index] = (char *) malloc(sizeof(char)*ARG_MAX);
+ 
+            if (fgets(history.history_list[history.history_index], ARG_MAX, file))
+            {
+                //Remove the '\n' character from the string
+                history.history_list[history.history_index][strlen(history.history_list[history.history_index])-1] = '\0';
+ 
+                history.history_size++;
             }
-            old_history.history_list[old_history.history_index] = line;
+            else break;
         }
         fclose(file);
     }
 }
 
-void saveHistory() {
+void saveHistory()
+{
     FILE *file;
-    file = fopen(history_file, "a");
-    if(file != NULL) {
-        for(int i=0; i<new_history.history_size; i++) {
-            if (strlen(new_history.history_list[i]) != 0 && !isWhiteSpaces(new_history.history_list[i]))
-            fprintf(file, "%s\n", new_history.history_list[i]);
+    file = fopen(history_file, "w");
+    if(file != NULL)
+    {
+        for (int i = history.history_size; i < HISTORY_SIZE; i++)
+        {
+            if (history.history_list[i] != NULL)
+                fprintf(file, "%s\n", history.history_list[i]);
+
+        }
+        for (int i = 0; i < history.history_size; i++)
+        {
+            if (history.history_list[i] != NULL)
+                fprintf(file, "%s\n", history.history_list[i]);
         }
         fclose(file);
     }
-    free(new_history.history_list);
 }
 
-void reloadHistory() {
-    saveHistory();
-    while(old_history.history_size --) {
-        free(old_history.history_list[old_history.history_size]);
-    }
-    free(old_history.history_list);
-    initNewHistory();
-    loadHistory();
+void freeHistory()
+{
+    for (int i = 0; i < history.history_size; i++)
+        free(history.history_list[i]);
+
+    free(history.history_list);
+    free(history_file);
 }
+

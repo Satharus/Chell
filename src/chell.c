@@ -24,7 +24,7 @@ int main()
         initPrompt();
         //Command input
         command = readline("");  
-       
+
         //If not an empty command
         if (command && strlen(command) != 0 && !isWhiteSpaces(command))
             executeCommand(command, executables);
@@ -154,6 +154,7 @@ void executeCommand(char *commandString, struct executable *executables)
         (strncmp(commandString, "q", strlen(commandString)) == 0 && strlen(commandString) == 1))
     {
         saveHistory();
+        freeHistory();
         exit(0);
     } 
 
@@ -232,13 +233,4 @@ void sigintHandler(int signal_number)
     fflush(stdout);
 }
 
-char isWhiteSpaces(char *str)
-{
-    int strLen = strlen(str);
-    for (int i = 0; i < strLen; i++)
-    {
-        if (str[i] != ' ' && str[i] != '\t')
-            return 0;
-    }
-    return 1;
-}
+
