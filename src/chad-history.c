@@ -63,11 +63,14 @@ void addHistory(char *command)
 {
     history.history_size %= HISTORY_SIZE;
 
-    if (history.history_list[history.history_size] == NULL)
-        history.history_list[history.history_size] = (char *) malloc(sizeof(char)*ARG_MAX);
-    strcpy(history.history_list[history.history_size], command);
+    // Not saving if successively repeated command
+    if(!(history.history_size != 0 && strcmp(history.history_list[(history.history_size - 1)%HISTORY_SIZE], command) == 0)) {
+        if (history.history_list[history.history_size] == NULL)
+            history.history_list[history.history_size] = (char *) malloc(sizeof(char)*ARG_MAX);
+        strcpy(history.history_list[history.history_size], command);
+        history.history_size++;
+    }
 
-    history.history_size++;
     history.history_index = history.history_size;
     strcpy(history.current_buffer, "");
 }
