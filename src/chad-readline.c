@@ -154,13 +154,13 @@ char *readline(char *prompt)
             }
             else if (escapeCharacter == UP_ARROW) //History up
             {
-                char *cmd = historyHandler.getPrev();
+                char *cmd = historyHandler.getPrev(line);
                 if(cmd != NULL)
                     replaceCommandDisplay(prompt, cmd, line);
             }
             else if (escapeCharacter == DOWN_ARROW) //History down
             {
-                char *cmd = historyHandler.getNext();
+                char *cmd = historyHandler.getNext(line);
                 if(cmd != NULL)
                     replaceCommandDisplay(prompt, cmd, line);
             }

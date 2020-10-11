@@ -12,6 +12,7 @@ struct history_manager
     char **history_list;
     int history_index;
     unsigned int history_size;
+    char *current_buffer;
 };
 
 struct history_manager history;
@@ -29,8 +30,10 @@ void initHistory()
     constructHistoryFilePath();
 
     history.history_list = calloc(HISTORY_SIZE, sizeof(char *));
-    history.history_index = -1;
+    history.history_index = 0;
     history.history_size = 0;
+    history.current_buffer = (char *) malloc(sizeof(char)*ARG_MAX);
+    strcpy(history.current_buffer, "");
     loadHistory();
 
     historyHandler.getNext = *getNext;
@@ -43,16 +46,17 @@ char *getNext(char *command)
     if (history.history_index < history.history_size)
         history.history_index++;
 
-    return history.history_list[history.history_index];
+    return (history.history_index == history.history_size) ? history.current_buffer : history.history_list[history.history_index];
 }
 
 char *getPrev(char *command)
 {
+    if(history.history_index == history.history_size) strcpy(history.current_buffer, command);
     if (history.history_index > 0)
         history.history_index--;
 
 
-    return history.history_list[history.history_index];
+    return (history.history_index == history.history_size) ? history.current_buffer : history.history_list[history.history_index];
 }
 
 void addHistory(char *command)
@@ -65,6 +69,7 @@ void addHistory(char *command)
 
     history.history_size++;
     history.history_index = history.history_size;
+    strcpy(history.current_buffer, "");
 }
 
 void loadHistory()
