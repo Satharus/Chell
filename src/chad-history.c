@@ -81,7 +81,7 @@ void loadHistory()
     {
         while(1)
         {
-            history.history_index++;
+            history.history_index = history.history_size;
             history.history_list[history.history_index] = (char *) malloc(sizeof(char)*ARG_MAX);
  
             if (fgets(history.history_list[history.history_index], ARG_MAX, file))
