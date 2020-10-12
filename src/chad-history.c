@@ -12,6 +12,7 @@ struct history_manager
     char **history_list;
     int history_index;
     unsigned int history_size;
+    char *current_buffer;
 };
 
 struct history_manager history;
@@ -29,8 +30,10 @@ void initHistory()
     constructHistoryFilePath();
 
     history.history_list = calloc(HISTORY_SIZE, sizeof(char *));
-    history.history_index = -1;
+    history.history_index = 0;
     history.history_size = 0;
+    history.current_buffer = (char *) malloc(sizeof(char)*ARG_MAX);
+    strcpy(history.current_buffer, "");
     loadHistory();
 
     historyHandler.getNext = *getNext;
@@ -43,28 +46,33 @@ char *getNext(char *command)
     if (history.history_index < history.history_size)
         history.history_index++;
 
-    return history.history_list[history.history_index];
+    return (history.history_index == history.history_size) ? history.current_buffer : history.history_list[history.history_index];
 }
 
 char *getPrev(char *command)
 {
+    if(history.history_index == history.history_size) strcpy(history.current_buffer, command);
     if (history.history_index > 0)
         history.history_index--;
 
 
-    return history.history_list[history.history_index];
+    return (history.history_index == history.history_size) ? history.current_buffer : history.history_list[history.history_index];
 }
 
 void addHistory(char *command)
 {
     history.history_size %= HISTORY_SIZE;
 
-    if (history.history_list[history.history_size] == NULL)
-        history.history_list[history.history_size] = (char *) malloc(sizeof(char)*ARG_MAX);
-    strcpy(history.history_list[history.history_size], command);
+    // Not saving if successively repeated command
+    if(!(history.history_size != 0 && strcmp(history.history_list[(history.history_size - 1)%HISTORY_SIZE], command) == 0)) {
+        if (history.history_list[history.history_size] == NULL)
+            history.history_list[history.history_size] = (char *) malloc(sizeof(char)*ARG_MAX);
+        strcpy(history.history_list[history.history_size], command);
+        history.history_size++;
+    }
 
-    history.history_size++;
     history.history_index = history.history_size;
+    strcpy(history.current_buffer, "");
 }
 
 void loadHistory()
@@ -76,7 +84,7 @@ void loadHistory()
     {
         while(1)
         {
-            history.history_index++;
+            history.history_index = history.history_size;
             history.history_list[history.history_index] = (char *) malloc(sizeof(char)*ARG_MAX);
  
             if (fgets(history.history_list[history.history_index], ARG_MAX, file))
