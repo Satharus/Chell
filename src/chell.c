@@ -149,6 +149,9 @@ int splitCommand(char *argv[], char *command)
 
 void executeCommand(char *commandString, struct executable *executables)
 {
+    if (strlen(commandString) == 0 || commandString == NULL)
+        return;
+
     if (strncmp(commandString, "exit", strlen(commandString)) == 0 ||
         (strncmp(commandString, "quit", strlen(commandString)) == 0  && strlen(commandString) == 4)||
         (strncmp(commandString, "q", strlen(commandString)) == 0 && strlen(commandString) == 1))

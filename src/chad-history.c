@@ -135,7 +135,7 @@ char isNumeric(char *str)
     int len = strlen(str);
     for (int i = 0; i < len; i++)
     {
-        if (!isdigit(str[i]))
+        if (str[i] < '0' || str[i] > '9')
             return 0;
     }
     return 1;
@@ -163,6 +163,8 @@ void historyCommand(char *arg)
             freeHistory();
             initHistory();
             printf("%s\n", "History cleared.");
+            *arg = '\0';
+            return;
         }
 
         if (isNumeric(arg))
@@ -171,6 +173,8 @@ void historyCommand(char *arg)
             if (index > 0 &&  index < HISTORY_SIZE)
                 strcpy(arg, history.history_list[index-1]);
         }
+        else //The parameter isn't numeric
+           *arg = '\0';
     }
 
 
