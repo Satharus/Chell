@@ -1,4 +1,4 @@
-CFLAGS   = -Wall
+CFLAGS   = -Wall -fsanitize=address -fno-omit-frame-pointer
 LDFLAGS  =
 PROG = chell
 CXX = gcc
@@ -22,5 +22,7 @@ clean:
 	rm $(PROG)
 
 run: 
+	@echo ----- building $(PROG) -----
+	@make all
 	@echo ----- running $(PROG) -----
 	@./$(PROG)

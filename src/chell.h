@@ -26,7 +26,7 @@ void initPrompt();
 int splitString(char *split[], char *string, char *delim);
 int splitCommand(char *argv[], char *command);
 
-void executeCommand(char *commandString, struct executable *executables);
+char executeCommand(char *commandString, struct executable *executables);
 
 void sigintHandler(int signal_number);
 

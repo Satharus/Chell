@@ -21,8 +21,9 @@ void constructHistoryFilePath()
 {
     history_file_length = strlen(getenv("HOME")) + strlen(HISTORY_FILE) + 1;
     history_file = (char *) malloc(sizeof(char)*history_file_length);
-    strncpy(history_file, getenv("HOME"), strlen(getenv("HOME")));
-    strncat(history_file, HISTORY_FILE, strlen(HISTORY_FILE) + 1);
+
+    snprintf(history_file, history_file_length, "%s%s", getenv("HOME"), HISTORY_FILE);
+    printf("%s\n", history_file);
 }
 
 void initHistory()
@@ -127,6 +128,7 @@ void freeHistory()
         free(history.history_list[i]);
 
     free(history.history_list);
+    free(history.current_buffer);
     free(history_file);
 }
 

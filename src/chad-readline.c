@@ -194,6 +194,7 @@ char *readline(char *prompt)
 
                 char *returnValue = strdup(line);
                 clearBuffer();
+                free(line);
                 return returnValue;
             }
             else if(!handle_special(input, line, &cursor, &currentLength))

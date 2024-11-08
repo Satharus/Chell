@@ -19,7 +19,8 @@ int main()
     initHistory();
 
     char *command;
-    while (1)
+    char status = 0;
+    while (status == 0)
     {
         initPrompt();
         //Command input
@@ -27,7 +28,7 @@ int main()
 
         //If not an empty command
         if (command && strlen(command) != 0 && !isWhiteSpaces(command))
-            executeCommand(command, executables);
+            status = executeCommand(command, executables);
     }
 
     free(command);
@@ -147,10 +148,10 @@ int splitCommand(char *argv[], char *command)
     return splitString(argv, command, "\t ");
 }
 
-void executeCommand(char *commandString, struct executable *executables)
+char executeCommand(char *commandString, struct executable *executables)
 {
     if (strlen(commandString) == 0 || commandString == NULL)
-        return;
+        return 0;
 
     if (strncmp(commandString, "exit", strlen(commandString)) == 0 ||
         (strncmp(commandString, "quit", strlen(commandString)) == 0  && strlen(commandString) == 4)||
@@ -158,7 +159,7 @@ void executeCommand(char *commandString, struct executable *executables)
     {
         saveHistory();
         freeHistory();
-        exit(0);
+        return 1;
     } 
 
     pid_t processID;
@@ -167,12 +168,13 @@ void executeCommand(char *commandString, struct executable *executables)
 
     //Allocate the argv array
     for (int i = 0; i < PATH_MAX; i++)
-        argv[i]= malloc(sizeof(char)*PATH_MAX);
+        argv[i] = malloc(sizeof(char)*PATH_MAX);
 
     //Split the command and get the number of arguments
     int argc = splitCommand(argv, commandString);
 
     //Set the bounds for the last argument
+    free(argv[argc]);
     argv[argc] = NULL;
 
     //Get the actual command path
@@ -237,6 +239,8 @@ void executeCommand(char *commandString, struct executable *executables)
         free(argv[i]);
 
     free (commandPath);
+    free (commandString);
+    return 0;
 
 }
 
